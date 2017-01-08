@@ -1,0 +1,2 @@
+content	lightninginvitationnotifier	chrome/content/
+overlay chrome://messenger/content/messenger.xul chrome://lightninginvitationnotifier/content/lin.xul
