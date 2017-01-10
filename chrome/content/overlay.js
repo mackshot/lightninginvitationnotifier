@@ -1,3 +1,6 @@
+const Cu = Components.utils;
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+
 var alreadyOpen = false;
 var state = "";
 
@@ -5,6 +8,7 @@ window.addEventListener("load", function(e) {
 	startup(); 
 }, false);
 
+let strings = new StringBundle("chrome://lightninginvitationnotifier/locale/message.properties");
 
 function startup() {
 	setInterval(function() {
@@ -15,7 +19,7 @@ function startup() {
 			document.getElementById('calendar-invitations-panel').click();
 			alreadyOpen = true;
 			state = document.getElementById('calendar-invitations-label').value;
-			popup("Ausstehende Termineinladung(en)", state);
+			popup(strings.get("invitations"), state);
 			document.getElementById('lin').label = 'LIN 1';
 			return;
 		}
@@ -31,7 +35,7 @@ function startup() {
 		// new additional invitation
 		if (state != document.getElementById('calendar-invitations-label').value) {
 			state = document.getElementById('calendar-invitations-label').value;
-			popup("Ausstehende Termineinladung(en)", state);
+			popup(strings.get("invitations"), state);
 			document.getElementById('lin').label = 'LIN 2';
 			return;
 		}
