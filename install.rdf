@@ -6,7 +6,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>lightninginvitationnotifier@markus.pullmann</em:id>
     <em:name>Lightning Invitation Notifier (LIN)</em:name>
-    <em:version>1.1</em:version>
+    <em:version>1.2</em:version>
     <em:creator>Markus Pullmann</em:creator>
    
     <em:targetApplication>
