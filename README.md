@@ -1,4 +1,4 @@
-Lighning Invitations Notifier
+Lightning Invitations Notifier
 =========================
 
 This extension is an extension to Mozilla Lightning for Thunderbird.
