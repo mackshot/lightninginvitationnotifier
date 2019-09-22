@@ -1,5 +1,4 @@
-const Cu = Components.utils;
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+var StringBundle = ChromeUtils.import("resource:///modules/StringBundle.js"); // scope.Foo…
 
 var LIN_dialogOpen = false;
 var LIN_state = "";
