@@ -1,16 +1,19 @@
-console.log("Starting Listener");
-
 var LIN_dialogOpen = false;
 var LIN_state = "";
-// LIN_popup("Hallo test", "Sie sind getestet.");
+
+document.getElementById('status-bar').appendChild(window.MozXULElement.parseXULToFragment('<hbox id="status-lin" class="statusbarpanel">LIN</hbox>'));
+
 window.setInterval(() => {
    var invitationPending = document.getElementById('calendar-invitations-panel') != null && !document.getElementById('calendar-invitations-panel').hidden && document.getElementById('calendar-invitations-label') != null && document.getElementById('calendar-invitations-label').value.length > 0;
 
    var update = function () {
       LIN_state = document.getElementById('calendar-invitations-label').value;
       if (invitationPending) {
-         LIN_popup("Einladung erhalten", LIN_state);
-      }
+         LIN_popup(WL.extension.localeData.localizeMessage("lightninginvitationnotifier.invitations"), LIN_state);
+		   document.getElementById('status-lin').innerHTML = 'LIN: ' + LIN_state;
+      } else {
+         document.getElementById('status-lin').innerHTML = 'LIN';
+	  }
    };
 
    // first invitation!

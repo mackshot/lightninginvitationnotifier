@@ -2,11 +2,12 @@
   "manifest_version": 2,
   "name": "Lightning Invitation Notifier (LIN)",
   "description": "This extension is an extension to Mozilla Lightning for Thunderbird. It shows a toast message and opens the invitations window when an invitation arrives.",
-  "version": "3.0",
-  "author": "Pixelboys_TM",
+  "version": "78.0",
+  "author": "Markus Pullmann (Mackshot) & Pixelboys_TM",
   "icons": {
     "32" : "content/icon32x32.png"
   },
+  "default_locale": "en-US",
   "applications": {
     "gecko": {
       "id": "lightninginvitationnotifier@markus.pullmann",
