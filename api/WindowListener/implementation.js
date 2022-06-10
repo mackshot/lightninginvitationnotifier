@@ -12,13 +12,19 @@
  */
 
 // Import some things we need.
-var { ExtensionCommon } = ChromeUtils.import(
+var {
+  ExtensionCommon
+} = ChromeUtils.import(
   "resource://gre/modules/ExtensionCommon.jsm"
 );
-var { ExtensionSupport } = ChromeUtils.import(
+var {
+  ExtensionSupport
+} = ChromeUtils.import(
   "resource:///modules/ExtensionSupport.jsm"
 );
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var {
+  Services
+} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var WindowListener = class extends ExtensionCommon.ExtensionAPI {
   log(msg) {
@@ -57,19 +63,19 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
     let id = this.menu_addonPrefs_id + "_" + this.uniqueRandomID;
 
     // Get the best size of the icon (16px or bigger)
-    let iconSizes = this.extension.manifest.icons
-      ? Object.keys(this.extension.manifest.icons)
-      : [];
+    let iconSizes = this.extension.manifest.icons ?
+      Object.keys(this.extension.manifest.icons) :
+      [];
     iconSizes.sort((a, b) => a - b);
     let bestSize = iconSizes.filter((e) => parseInt(e) >= 16).shift();
     let icon = bestSize ? this.extension.manifest.icons[bestSize] : "";
 
     let name = this.extension.manifest.name;
-    let entry = icon
-      ? event.target.ownerGlobal.MozXULElement.parseXULToFragment(
+    let entry = icon ?
+      event.target.ownerGlobal.MozXULElement.parseXULToFragment(
         `<menuitem class="menuitem-iconic" id="${id}" image="${icon}" label="${name}" />`
-      )
-      : event.target.ownerGlobal.MozXULElement.parseXULToFragment(
+      ) :
+      event.target.ownerGlobal.MozXULElement.parseXULToFragment(
         `<menuitem id="${id}" label="${name}" />`
       );
 
@@ -87,108 +93,105 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
   handleEvent(e) {
     switch (e.type) {
       // 68 add-on options menu showing
-      case "popupshowing":
-        {
-          this.add68PrefsEntry(e);
-        }
-        break;
+      case "popupshowing": {
+        this.add68PrefsEntry(e);
+      }
+      break;
 
       // 78/88 add-on options menu/button click
-      case "click":
-        {
-          e.preventDefault();
-          e.stopPropagation();
-          let WL = {};
-          WL.extension = this.extension;
-          WL.messenger = this.getMessenger(this.context);
-          let w = Services.wm.getMostRecentWindow("mail:3pane");
-          w.openDialog(
-            this.pathToOptionsPage,
-            "AddonOptions",
-            "chrome,resizable,centerscreen",
-            WL
-          );
-        }
-        break;
+    case "click": {
+      e.preventDefault();
+      e.stopPropagation();
+      let WL = {};
+      WL.extension = this.extension;
+      WL.messenger = this.getMessenger(this.context);
+      let w = Services.wm.getMostRecentWindow("mail:3pane");
+      w.openDialog(
+        this.pathToOptionsPage,
+        "AddonOptions",
+        "chrome,resizable,centerscreen",
+        WL
+      );
+    }
+    break;
 
-      // 68 add-on options menu command
-      case "command":
-        {
-          let WL = {};
-          WL.extension = this.extension;
-          WL.messenger = this.getMessenger(this.context);
-          e.target.ownerGlobal.openDialog(
-            this.pathToOptionsPage,
-            "AddonOptions",
-            "chrome,resizable,centerscreen",
-            WL
-          );
-        }
-        break;
+    // 68 add-on options menu command
+    case "command": {
+      let WL = {};
+      WL.extension = this.extension;
+      WL.messenger = this.getMessenger(this.context);
+      e.target.ownerGlobal.openDialog(
+        this.pathToOptionsPage,
+        "AddonOptions",
+        "chrome,resizable,centerscreen",
+        WL
+      );
+    }
+    break;
 
-      // update, ViewChanged and manual call for add-on manager options overlay
-      default: {
-        let cards = this.getCards(e);
-        for (let card of cards) {
-          // Setup either the options entry in the menu or the button
-          //window.document.getElementById(id).addEventListener("command", function() {window.openDialog(self.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", WL)});
-          if (card.addon.id == this.extension.id) {
-            let optionsMenu =
-              (this.getThunderbirdVersion().major > 78 && this.getThunderbirdVersion().major < 88) ||
-              (this.getThunderbirdVersion().major == 78 && this.getThunderbirdVersion().minor < 10) ||
-              (this.getThunderbirdVersion().major == 78 && this.getThunderbirdVersion().minor == 10 && this.getThunderbirdVersion().revision < 2);
-            if (optionsMenu) {
-              // Options menu in 78.0-78.10 and 79-87
-              let addonOptionsLegacyEntry = card.querySelector(
-                ".extension-options-legacy"
+    // update, ViewChanged and manual call for add-on manager options overlay
+    default: {
+      let cards = this.getCards(e);
+      for (let card of cards) {
+        // Setup either the options entry in the menu or the button
+        //window.document.getElementById(id).addEventListener("command", function() {window.openDialog(self.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", WL)});
+        if (card.addon.id == this.extension.id) {
+          let optionsMenu =
+            (this.getThunderbirdVersion().major > 78 && this.getThunderbirdVersion().major < 88) ||
+            (this.getThunderbirdVersion().major == 78 && this.getThunderbirdVersion().minor < 10) ||
+            (this.getThunderbirdVersion().major == 78 && this.getThunderbirdVersion().minor == 10 && this.getThunderbirdVersion().revision < 2);
+          if (optionsMenu) {
+            // Options menu in 78.0-78.10 and 79-87
+            let addonOptionsLegacyEntry = card.querySelector(
+              ".extension-options-legacy"
+            );
+            if (card.addon.isActive && !addonOptionsLegacyEntry) {
+              let addonOptionsEntry = card.querySelector(
+                "addon-options panel-list panel-item[action='preferences']"
               );
-              if (card.addon.isActive && !addonOptionsLegacyEntry) {
-                let addonOptionsEntry = card.querySelector(
-                  "addon-options panel-list panel-item[action='preferences']"
-                );
-                addonOptionsLegacyEntry = card.ownerDocument.createElement(
-                  "panel-item"
-                );
-                addonOptionsLegacyEntry.setAttribute(
-                  "data-l10n-id",
-                  "preferences-addon-button"
-                );
-                addonOptionsLegacyEntry.classList.add(
-                  "extension-options-legacy"
-                );
-                addonOptionsEntry.parentNode.insertBefore(
-                  addonOptionsLegacyEntry,
-                  addonOptionsEntry
-                );
-                card
-                  .querySelector(".extension-options-legacy")
-                  .addEventListener("click", this);
-              } else if (!card.addon.isActive && addonOptionsLegacyEntry) {
-                addonOptionsLegacyEntry.remove();
-              }
-            } else {
-              // Add-on button in 88
-              let addonOptionsButton = card.querySelector(
-                ".windowlistener-options-button"
+              addonOptionsLegacyEntry = card.ownerDocument.createElement(
+                "panel-item"
               );
-              if (card.addon.isActive && !addonOptionsButton) {
-                addonOptionsButton = card.ownerDocument.createElement("button");
-                addonOptionsButton.classList.add("windowlistener-options-button");
-                addonOptionsButton.classList.add("extension-options-button");
-                card.optionsButton.parentNode.insertBefore(
-                  addonOptionsButton,
-                  card.optionsButton
-                );
-                card
-                  .querySelector(".windowlistener-options-button")
-                  .addEventListener("click", this);
-              } else if (!card.addon.isActive && addonOptionsButton) {
-                addonOptionsButton.remove();
-              }
+              addonOptionsLegacyEntry.setAttribute(
+                "data-l10n-id",
+                "preferences-addon-button"
+              );
+              addonOptionsLegacyEntry.classList.add(
+                "extension-options-legacy"
+              );
+              addonOptionsEntry.parentNode.insertBefore(
+                addonOptionsLegacyEntry,
+                addonOptionsEntry
+              );
+              card
+                .querySelector(".extension-options-legacy")
+                .addEventListener("click", this);
+            } else if (!card.addon.isActive && addonOptionsLegacyEntry) {
+              addonOptionsLegacyEntry.remove();
+            }
+          } else {
+            // Add-on button in 88
+            let addonOptionsButton = card.querySelector(
+              ".windowlistener-options-button"
+            );
+            if (card.addon.isActive && !addonOptionsButton) {
+              addonOptionsButton = card.ownerDocument.createElement("button");
+              addonOptionsButton.classList.add("windowlistener-options-button");
+              addonOptionsButton.classList.add("extension-options-button");
+              card.optionsButton.parentNode.insertBefore(
+                addonOptionsButton,
+                card.optionsButton
+              );
+              card
+                .querySelector(".windowlistener-options-button")
+                .addEventListener("click", this);
+            } else if (!card.addon.isActive && addonOptionsButton) {
+              addonOptionsButton.remove();
             }
           }
         }
       }
+    }
     }
   }
 
@@ -223,10 +226,10 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
       return;
     }
     if (!(
-      managerWindow &&
-      managerWindow[this.uniqueRandomID] &&
-      managerWindow[this.uniqueRandomID].hasAddonManagerEventListeners
-    )) {
+        managerWindow &&
+        managerWindow[this.uniqueRandomID] &&
+        managerWindow[this.uniqueRandomID].hasAddonManagerEventListeners
+      )) {
       managerWindow.document.addEventListener("ViewChanged", this);
       managerWindow.document.addEventListener("update", this);
       managerWindow.document.addEventListener("view-loaded", this);
@@ -329,10 +332,10 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
 
     // TabMonitor to detect opening of tabs, to setup the options button in the add-on manager.
     this.tabMonitor = {
-      onTabTitleChanged(aTab) { },
-      onTabClosing(aTab) { },
-      onTabPersist(aTab) { },
-      onTabRestored(aTab) { },
+      onTabTitleChanged(aTab) {},
+      onTabClosing(aTab) {},
+      onTabPersist(aTab) {},
+      onTabRestored(aTab) {},
       onTabSwitched(aNewTab, aOldTab) {
         //self.setupAddonManager(self.getAddonManagerFromTab(aNewTab));
       },
@@ -346,19 +349,22 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
                   "nsIWebProgressListener",
                   "nsISupportsWeakReference",
                 ]),
-                onStateChange() { },
-                onProgressChange() { },
+                onStateChange() {},
+                onProgressChange() {},
                 onLocationChange(
-                  /* in nsIWebProgress*/ aWebProgress,
-                  /* in nsIRequest*/ aRequest,
-                  /* in nsIURI*/ aLocation
+                  /* in nsIWebProgress*/
+                  aWebProgress,
+                  /* in nsIRequest*/
+                  aRequest,
+                  /* in nsIURI*/
+                  aLocation
                 ) {
                   aTab.browser.removeProgressListener(reporterListener);
                   resolve();
                 },
-                onStatusChange() { },
-                onSecurityChange() { },
-                onContentBlockingEvent() { },
+                onStatusChange() {},
+                onSecurityChange() {},
+                onContentBlockingEvent() {},
               };
               aTab.browser.addProgressListener(reporterListener);
             });
@@ -396,9 +402,9 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
         },
 
         registerOptionsPage(optionsUrl) {
-          self.pathToOptionsPage = optionsUrl.startsWith("chrome://")
-            ? optionsUrl
-            : context.extension.rootURI.resolve(optionsUrl);
+          self.pathToOptionsPage = optionsUrl.startsWith("chrome://") ?
+            optionsUrl :
+            context.extension.rootURI.resolve(optionsUrl);
         },
 
         registerDefaultPrefs(defaultUrl) {
@@ -482,9 +488,9 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
 
           if (!self.registeredWindows.hasOwnProperty(windowHref)) {
             // path to JS file can either be chrome:// URL or a relative URL
-            let path = jsFile.startsWith("chrome://")
-              ? jsFile
-              : context.extension.rootURI.resolve(jsFile);
+            let path = jsFile.startsWith("chrome://") ?
+              jsFile :
+              context.extension.rootURI.resolve(jsFile);
 
             self.registeredWindows[windowHref] = path;
           } else {
@@ -495,15 +501,15 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
         },
 
         registerStartupScript(aPath) {
-          self.pathToStartupScript = aPath.startsWith("chrome://")
-            ? aPath
-            : context.extension.rootURI.resolve(aPath);
+          self.pathToStartupScript = aPath.startsWith("chrome://") ?
+            aPath :
+            context.extension.rootURI.resolve(aPath);
         },
 
         registerShutdownScript(aPath) {
-          self.pathToShutdownScript = aPath.startsWith("chrome://")
-            ? aPath
-            : context.extension.rootURI.resolve(aPath);
+          self.pathToShutdownScript = aPath.startsWith("chrome://") ?
+            aPath :
+            context.extension.rootURI.resolve(aPath);
         },
 
         openOptionsDialog(windowId) {
@@ -567,8 +573,7 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
 
             // Register window listener for all pre-registered windows
             ExtensionSupport.registerWindowListener(
-              "injectListener_" + self.uniqueRandomID,
-              {
+              "injectListener_" + self.uniqueRandomID, {
                 // React on all windows and manually reduce to the registered
                 // windows, so we can do special actions when the main
                 // messenger window is opened.
@@ -672,8 +677,7 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
                       } else {
                         // Window/Browser is not yet fully loaded, postpone injection via MutationObserver
                         window[self.uniqueRandomID]._mObserver.observe(
-                          element,
-                          {
+                          element, {
                             attributes: true,
                             childList: false,
                             characterData: false,
@@ -774,12 +778,12 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
               // take care of persists
               const uri = window.document.documentURI;
               for (const persistentNode of elements[i].querySelectorAll(
-                "[persist]"
-              )) {
+                  "[persist]"
+                )) {
                 for (const persistentAttribute of persistentNode
-                  .getAttribute("persist")
-                  .trim()
-                  .split(" ")) {
+                    .getAttribute("persist")
+                    .trim()
+                    .split(" ")) {
                   if (
                     Services.xulStore.hasValue(
                       uri,
@@ -970,7 +974,7 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
           window[this.uniqueRandomID],
           "UTF-8"
         );
-        window[this.uniqueRandomID].onLoad(isAddonActivation);
+        // window[this.uniqueRandomID].onLoad(isAddonActivation);
       } catch (e) {
         Components.utils.reportError(e);
       }
@@ -1023,8 +1027,8 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
 
       // Remove all autoinjected toolbarpalette items
       for (const palette of Object.values(
-        window[this.uniqueRandomID]._toolbarpalettes
-      )) {
+          window[this.uniqueRandomID]._toolbarpalettes
+        )) {
         let elements = Array.from(
           palette.querySelectorAll(
             '[wlapi_autoinjected="' + this.uniqueRandomID + '"]'
