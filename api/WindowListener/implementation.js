@@ -974,7 +974,7 @@ var WindowListener = class extends ExtensionCommon.ExtensionAPI {
           window[this.uniqueRandomID],
           "UTF-8"
         );
-        // window[this.uniqueRandomID].onLoad(isAddonActivation);
+        window[this.uniqueRandomID].onLoad(isAddonActivation);
       } catch (e) {
         Components.utils.reportError(e);
       }

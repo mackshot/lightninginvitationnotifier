@@ -1,8 +1,6 @@
 var LIN_dialogOpen = false;
 var LIN_state = "";
 
-document.getElementById('status-bar').appendChild(window.MozXULElement.parseXULToFragment('<label id="status-lin" class="statusbarpanel">LIN</label>'));
-
 window.setInterval(() => {
    var invitationPending = document.getElementById('calendar-invitations-panel') != null
       && !document.getElementById('calendar-invitations-panel').hidden
@@ -49,4 +47,19 @@ function LIN_popup(title, text) {
    } catch (e) {
       // prevents runtime error on platforms that don't implement nsIAlertsService
    }
+}
+
+
+function onLoad(activatedWhileWindowOpen) {
+   document.getElementById('status-bar').appendChild(window.MozXULElement.parseXULToFragment('<label id="status-lin" class="statusbarpanel">LIN</label>'));
+}
+
+function onUnload(deactivatedWhileWindowOpen) {
+  if (!deactivatedWhileWindowOpen) {
+    return
+  }
+  var linStatus = document.getElementById('status-lin');
+  if (linStatus != null) {
+    linStatus.remove();
+  }
 }
