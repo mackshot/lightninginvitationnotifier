@@ -1,10 +1,13 @@
 var LIN_dialogOpen = false;
 var LIN_state = "";
 
-document.getElementById('status-bar').appendChild(window.MozXULElement.parseXULToFragment('<hbox id="status-lin" class="statusbarpanel">LIN</hbox>'));
+document.getElementById('status-bar').appendChild(window.MozXULElement.parseXULToFragment('<label id="status-lin" class="statusbarpanel">LIN</label>'));
 
 window.setInterval(() => {
-   var invitationPending = document.getElementById('calendar-invitations-panel') != null && !document.getElementById('calendar-invitations-panel').hidden && document.getElementById('calendar-invitations-label') != null && document.getElementById('calendar-invitations-label').value.length > 0;
+   var invitationPending = document.getElementById('calendar-invitations-panel') != null
+      && !document.getElementById('calendar-invitations-panel').hidden
+      && document.getElementById('calendar-invitations-label') != null
+      && document.getElementById('calendar-invitations-label').value.length > 0;
 
    var update = function () {
       LIN_state = document.getElementById('calendar-invitations-label').value;
